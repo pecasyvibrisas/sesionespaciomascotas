@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pecas y Vibrisas · Sesión fotográfica</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --verde: #6b7a4e;
+    --verde-light: #f0f2ea;
+    --verde-mid: #c8d0ae;
+    --azul: #445570;
+    --azul-light: #eef0f5;
+    --text: #1e1e1a;
+    --text-mid: #666660;
+    --text-light: #999993;
+    --border: #e0e0d8;
+    --bg: #faf9f7;
+    --white: #ffffff;
+    --radius: 10px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .page {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  /* HEADER */
+  .header { text-align: center; margin-bottom: 3rem; }
+
+  .logo {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--verde);
+    margin-bottom: 1.5rem;
+    padding: 6px 14px;
+    border: 0.5px solid var(--verde-mid);
+    border-radius: 99px;
+  }
+
+  .greeting {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--text-mid);
+    margin-bottom: 0.4rem;
+  }
+
+  .title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(26px, 6vw, 34px);
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 1rem;
+  }
+
+  .title em {
+    font-style: italic;
+    color: var(--verde);
+  }
+
+  .subtitle {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--text-mid);
+    line-height: 1.7;
+    max-width: 420px;
+    margin: 0 auto 1.25rem;
+  }
+
+  .intro-note {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.65;
+    background: var(--verde-light);
+    border-left: 2px solid var(--verde);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 10px 16px;
+    text-align: left;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 0.5px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  /* SECTION */
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.4rem;
+  }
+
+  .section-sub {
+    font-size: 13px;
+    color: var(--text-mid);
+    margin-bottom: 0.85rem;
+    line-height: 1.5;
+  }
+
+  /* INFO CARD */
+  .info-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.3rem;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .info-row + .info-row { border-top: 0.5px solid var(--border); }
+
+  .info-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--verde);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  /* CALENDAR */
+  .cal-wrap {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+
+  .cal-month-label {
+    text-align: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+
+  .cal-header-cell {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--text-light);
+    padding: 4px 0 6px;
+  }
+
+  .cal-day {
+    text-align: center;
+    font-size: 13px;
+    padding: 7px 2px;
+    border-radius: 7px;
+    cursor: pointer;
+    color: var(--text);
+    border: 0.5px solid transparent;
+    transition: all 0.12s;
+    user-select: none;
+  }
+
+  .cal-day:hover:not(.disabled):not(.empty) {
+    background: var(--verde-light);
+    border-color: var(--verde-mid);
+  }
+
+  .cal-day.selected-m {
+    background: var(--verde);
+    color: #fff;
+    border-color: var(--verde);
+    font-weight: 500;
+  }
+
+  .cal-day.selected-t {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul);
+    font-weight: 500;
+  }
+
+  .cal-day.disabled {
+    color: var(--border);
+    cursor: default;
+    text-decoration: line-through;
+  }
+
+  .cal-day.empty { cursor: default; }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 0.85rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-mid);
+  }
+
+  .legend-dot-m { width: 8px; height: 8px; border-radius: 50%; background: var(--verde); }
+  .legend-dot-t { width: 8px; height: 8px; border-radius: 50%; background: var(--azul); }
+
+  /* CHIPS */
+  .chips-area {
+    margin-top: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .date-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    background: var(--bg);
+    font-size: 13px;
+  }
+
+  .chip-left { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .chip-dot-m { width: 7px; height: 7px; border-radius: 50%; background: var(--verde); flex-shrink: 0; }
+  .chip-dot-t { width: 7px; height: 7px; border-radius: 50%; background: var(--azul); flex-shrink: 0; }
+  .chip-date { font-weight: 500; color: var(--text); }
+  .chip-time { font-size: 12px; color: var(--text-mid); }
+
+  .chip-toggle { display: flex; gap: 4px; }
+
+  .chip-btn {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    cursor: pointer;
+    border: 0.5px solid var(--border);
+    background: var(--white);
+    color: var(--text-mid);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.1s;
+  }
+
+  .chip-btn:hover { border-color: var(--verde-mid); }
+  .chip-btn.active-m { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .chip-btn.active-t { background: var(--azul); color: #fff; border-color: var(--azul); }
+
+  .chip-remove {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-light); font-size: 18px; line-height: 1;
+    padding: 0 2px; transition: color 0.1s;
+  }
+  .chip-remove:hover { color: var(--text); }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 0.6rem;
+  }
+
+  /* OPTIONS 2 col */
+  .two-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 0.75rem;
+  }
+
+  .opt-card {
+    padding: 14px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    background: var(--white);
+    transition: all 0.12s;
+  }
+
+  .opt-card:hover { border-color: var(--verde-mid); background: var(--verde-light); }
+
+  .opt-card.selected {
+    border-color: var(--verde);
+    background: var(--verde-light);
+  }
+
+  .opt-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .opt-desc { font-size: 12px; color: var(--text-mid); }
+
+  /* INPUTS */
+  input[type="text"], textarea {
+    width: 100%;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--white);
+    outline: none;
+    margin-top: 0.75rem;
+    transition: border-color 0.15s;
+  }
+
+  input[type="text"]:focus, textarea:focus { border-color: var(--verde); }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+  .field-note {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 0.4rem;
+    line-height: 1.5;
+  }
+
+  /* SUMMARY */
+  .summary-box {
+    background: var(--verde-light);
+    border: 0.5px solid var(--verde-mid);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #4a5533;
+    margin-top: 1rem;
+    line-height: 1.85;
+    display: none;
+  }
+
+  /* BUTTON */
+  .confirm-btn {
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: 15px;
+    background: var(--verde);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.01em;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .confirm-btn:hover:not(:disabled) { opacity: 0.88; }
+  .confirm-btn:active:not(:disabled) { transform: scale(0.99); }
+  .confirm-btn:disabled { opacity: 0.35; cursor: default; }
+
+  .bottom-note {
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: 0.85rem;
+    line-height: 1.6;
+  }
+
+  /* SUCCESS */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+
+  .success-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--verde-light);
+    border: 1px solid var(--verde-mid);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 22px;
+  }
+
+  .success-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+
+  .success-text {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 480px) {
+    .page { padding: 2rem 1.1rem 3rem; }
+    .chip-time { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page" id="form-page">
+
+  <div class="header">
+    <span class="logo">Pecas y Vibrisas</span>
+    <p class="greeting">Hola, Adri</p>
+    <h1 class="title">Vamos a preparar<br><em>vuestra sesión</em></h1>
+    <p class="subtitle">Cuéntame tus preferencias y cerramos juntos la fecha perfecta.</p>
+    <div class="intro-note">Rellena el formulario con tus opciones disponibles y en menos de 24h te escribo para confirmar el día definitivo.</div>
+  </div>
+
+  <p class="section-label">Qué incluye tu sesión</p>
+  <div class="info-card">
+    <div class="info-row"><span class="info-dot"></span><span>5 fotografías digitales en alta calidad, editadas</span></div>
+    <div class="info-row"><span class="info-dot"></span><span>Sesión tranquila de aproximadamente 45 minutos</span></div>
+    <div class="info-row"><span class="info-dot"></span><span>En interior (tu casa) o exterior, lo que prefieras</span></div>
+    <div class="info-row"><span class="info-dot"></span><span>Zona de Gijón y alrededores</span></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="section-label">¿Qué días te van bien en mayo?</p>
+  <p class="section-sub">Marca uno o varios días y elige el horario que prefieres para cada uno.</p>
+  <div class="cal-wrap">
+    <p class="cal-month-label">Mayo 2026</p>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot-m"></div> Mañana (10–13h)</div>
+      <div class="legend-item"><div class="legend-dot-t"></div> Tarde (18–21h)</div>
+    </div>
+    <div class="chips-area" id="chips-area"></div>
+    <p class="hint" id="cal-hint">Toca un día disponible para añadirlo.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="section-label">Tipo de espacio</p>
+  <div class="two-grid" id="loc-grid">
+    <div class="opt-card" data-loc="Interior (en casa)">
+      <p class="opt-title">Interior</p>
+      <p class="opt-desc">En vuestra casa</p>
+    </div>
+    <div class="opt-card" data-loc="Exterior">
+      <p class="opt-title">Exterior</p>
+      <p class="opt-desc">Al aire libre</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="section-label">¿En qué localidad vivís?</p>
+  <input type="text" id="localidad" placeholder="Ej. Oviedo, Gijón, Siero...">
+  <p class="field-note">Lo necesito para confirmar que puedo desplazarme a vuestro espacio.</p>
+
+  <div class="divider"></div>
+
+  <p class="section-label">Cuéntame un poco</p>
+  <p class="section-sub">Nombre de tu animal, raza, edad... y cualquier cosa que creas que puede ayudarme a preparar la sesión.</p>
+  <textarea id="notes" placeholder="Escribe aquí..."></textarea>
+
+  <div class="summary-box" id="summary"></div>
+  <button class="confirm-btn" id="confirm-btn" disabled>Enviar preferencias</button>
+  <p class="bottom-note">Te escribo en menos de 24h para cerrar el día definitivo.</p>
+
+</div>
+
+<div class="success-screen" id="success-screen">
+  <div class="success-icon">✓</div>
+  <h2 class="success-title">¡Recibido!</h2>
+  <p class="success-text">Ya tengo tus preferencias.<br>Te escribo en menos de 24h para cerrar juntos el día definitivo.</p>
+</div>
+
+<script>
+const FULL_BLOCK = [7,8,9,10,28,29,30,31];
+function getDow(d) { return new Date(2026,4,d).getDay(); }
+function isBlocked(d) { return FULL_BLOCK.includes(d) || getDow(d) === 2; }
+
+let selectedDays = {};
+let selectedLoc = null;
+
+function renderCal() {
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  ['Lu','Ma','Mi','Ju','Vi','Sá','Do'].forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'cal-header-cell';
+    h.textContent = d;
+    grid.appendChild(h);
+  });
+  const firstDow = new Date(2026,4,1).getDay();
+  const offset = firstDow === 0 ? 6 : firstDow - 1;
+  for (let i = 0; i < offset; i++) {
+    const e = document.createElement('div'); e.className = 'cal-day empty'; grid.appendChild(e);
+  }
+  for (let d = 1; d <= 31; d++) {
+    const cell = document.createElement('div');
+    const blocked = isBlocked(d);
+    const state = selectedDays[d];
+    let cls = 'cal-day';
+    if (blocked) cls += ' disabled';
+    else if (state === 'M') cls += ' selected-m';
+    else if (state === 'T') cls += ' selected-t';
+    cell.className = cls;
+    cell.textContent = d;
+    if (!blocked) {
+      cell.addEventListener('click', () => {
+        if (selectedDays[d]) { delete selectedDays[d]; }
+        else { selectedDays[d] = 'M'; }
+        renderCal(); renderChips(); updateSummary();
+      });
+    }
+    grid.appendChild(cell);
+  }
+}
+
+function renderChips() {
+  const area = document.getElementById('chips-area');
+  const hint = document.getElementById('cal-hint');
+  area.innerHTML = '';
+  const days = Object.keys(selectedDays).map(Number).sort((a,b)=>a-b);
+  if (days.length === 0) {
+    hint.textContent = 'Toca un día disponible para añadirlo.';
+    return;
+  }
+  hint.textContent = days.length === 1 ? '1 día seleccionado.' : days.length + ' días seleccionados.';
+  days.forEach(d => {
+    const t = selectedDays[d];
+    const chip = document.createElement('div');
+    chip.className = 'date-chip';
+    chip.innerHTML = `
+      <div class="chip-left">
+        <div class="${t==='M'?'chip-dot-m':'chip-dot-t'}"></div>
+        <span class="chip-date">${d} de mayo</span>
+        <span class="chip-time">${t==='M'?'Mañana · 10–13h':'Tarde · 18–21h'}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="chip-toggle">
+          <button class="chip-btn ${t==='M'?'active-m':''}" data-day="${d}" data-val="M">Mañana</button>
+          <button class="chip-btn ${t==='T'?'active-t':''}" data-day="${d}" data-val="T">Tarde</button>
+        </div>
+        <button class="chip-remove" data-day="${d}">&times;</button>
+      </div>`;
+    area.appendChild(chip);
+  });
+  area.querySelectorAll('.chip-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      selectedDays[parseInt(btn.dataset.day)] = btn.dataset.val;
+      renderCal(); renderChips(); updateSummary();
+    });
+  });
+  area.querySelectorAll('.chip-remove').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      delete selectedDays[parseInt(btn.dataset.day)];
+      renderCal(); renderChips(); updateSummary();
+    });
+  });
+}
+
+document.getElementById('loc-grid').addEventListener('click', e => {
+  const opt = e.target.closest('.opt-card');
+  if (!opt) return;
+  document.querySelectorAll('.opt-card').forEach(s => s.classList.remove('selected'));
+  opt.classList.add('selected');
+  selectedLoc = opt.dataset.loc;
+  updateSummary();
+});
+
+document.getElementById('localidad').addEventListener('input', updateSummary);
+
+function updateSummary() {
+  const s = document.getElementById('summary');
+  const btn = document.getElementById('confirm-btn');
+  const localidad = document.getElementById('localidad').value.trim();
+  const days = Object.keys(selectedDays).map(Number).sort((a,b)=>a-b);
+  if (days.length > 0 && selectedLoc && localidad) {
+    const datesStr = days.map(d => d + ' de mayo (' + (selectedDays[d]==='M'?'mañana':'tarde') + ')').join(', ');
+    s.style.display = 'block';
+    s.innerHTML = '<strong>Fechas:</strong> ' + datesStr + '<br><strong>Espacio:</strong> ' + selectedLoc + '<br><strong>Localidad:</strong> ' + localidad;
+    btn.disabled = false;
+  } else {
+    s.style.display = 'none';
+    btn.disabled = true;
+  }
+}
+
+document.getElementById('confirm-btn').addEventListener('click', async () => {
+  const localidad = document.getElementById('localidad').value.trim();
+  const days = Object.keys(selectedDays).map(Number).sort((a,b)=>a-b);
+  if (!days.length || !selectedLoc || !localidad) return;
+
+  const datesStr = days.map(d => d + ' de mayo de 2026 (' + (selectedDays[d]==='M'?'mañana 10–13h':'tarde 18–21h') + ')').join(', ');
+  const notes = document.getElementById('notes').value.trim();
+
+  const btn = document.getElementById('confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  try {
+    const res = await fetch('https://formspree.io/f/meevkyzk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        nombre: 'Adri',
+        fechas: datesStr,
+        espacio: selectedLoc,
+        localidad: localidad,
+        notas: notes || '—'
+      })
+    });
+
+    if (res.ok) {
+      document.getElementById('form-page').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Enviar preferencias';
+      alert('Algo fue mal. Por favor inténtalo de nuevo.');
+    }
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = 'Enviar preferencias';
+    alert('Error de conexión. Por favor inténtalo de nuevo.');
+  }
+});
+
+renderCal();
+renderChips();
+</script>
+</body>
+</html>
