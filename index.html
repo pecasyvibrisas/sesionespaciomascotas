@@ -42,18 +42,11 @@
   /* HEADER */
   .header { text-align: center; margin-bottom: 3rem; }
 
-  .logo {
-    display: inline-block;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--verde);
-    margin-bottom: 1.5rem;
-    padding: 6px 14px;
-    border: 0.5px solid var(--verde-mid);
-    border-radius: 99px;
+  .logo-img {
+    display: block;
+    width: 150px;
+    margin: 0 auto 1.75rem;
+    border-radius: 12px;
   }
 
   .greeting {
@@ -431,11 +424,11 @@
 <div class="page" id="form-page">
 
   <div class="header">
-    <span class="logo">Pecas y Vibrisas</span>
-    <p class="greeting">Hola, Adri</p>
+    <img src="logo.png" alt="Pecas y Vibrisas" class="logo-img">
+    <p class="greeting">Hola, Adrián</p>
     <h1 class="title">Vamos a preparar<br><em>vuestra sesión</em></h1>
     <p class="subtitle">Cuéntame tus preferencias y cerramos juntos la fecha perfecta.</p>
-    <div class="intro-note">Rellena el formulario con tus opciones disponibles y en menos de 24h te escribo para confirmar el día definitivo.</div>
+    <div class="intro-note">Rellena el formulario con tus opciones disponibles y en los próximos días te escribo para confirmar el día definitivo.</div>
   </div>
 
   <p class="section-label">Qué incluye tu sesión</p>
@@ -479,7 +472,7 @@
 
   <p class="section-label">¿En qué localidad vivís?</p>
   <input type="text" id="localidad" placeholder="Ej. Oviedo, Gijón, Siero...">
-  <p class="field-note">Lo necesito para confirmar que puedo desplazarme a vuestro espacio.</p>
+  <p class="field-note">Lo necesito para organizar bien el día.</p>
 
   <div class="divider"></div>
 
@@ -489,14 +482,14 @@
 
   <div class="summary-box" id="summary"></div>
   <button class="confirm-btn" id="confirm-btn" disabled>Enviar preferencias</button>
-  <p class="bottom-note">Te escribo en menos de 24h para cerrar el día definitivo.</p>
+  <p class="bottom-note">Te escribo en los próximos días para cerrar el día definitivo.</p>
 
 </div>
 
 <div class="success-screen" id="success-screen">
   <div class="success-icon">✓</div>
   <h2 class="success-title">¡Recibido!</h2>
-  <p class="success-text">Ya tengo tus preferencias.<br>Te escribo en menos de 24h para cerrar juntos el día definitivo.</p>
+  <p class="success-text">Ya tengo tus preferencias, Adrián.<br>Te escribo en los próximos días para cerrar juntos el día definitivo.</p>
 </div>
 
 <script>
@@ -631,7 +624,7 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
-        nombre: 'Adri',
+        nombre: 'Adrián',
         fechas: datesStr,
         espacio: selectedLoc,
         localidad: localidad,
