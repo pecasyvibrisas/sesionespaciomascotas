@@ -424,18 +424,18 @@
 <div class="page" id="form-page">
 
   <div class="header">
-    <img src="logo.png" alt="Pecas y Vibrisas" class="logo-img">
+    <img src="logo.jpg" alt="Pecas y Vibrisas" class="logo-img">
     <p class="greeting">Hola, Adrián</p>
     <h1 class="title">Vamos a preparar<br><em>vuestra sesión</em></h1>
     <p class="subtitle">Cuéntame tus preferencias y cerramos juntos la fecha perfecta.</p>
-    <div class="intro-note">Rellena el formulario con tus opciones disponibles y en los próximos días te escribo para confirmar el día definitivo.</div>
+    <div class="intro-note">Rellena el formulario con tus opciones disponibles y en menos de 24h te escribo para confirmar el día definitivo.</div>
   </div>
 
   <p class="section-label">Qué incluye tu sesión</p>
   <div class="info-card">
     <div class="info-row"><span class="info-dot"></span><span>5 fotografías digitales en alta calidad, editadas</span></div>
     <div class="info-row"><span class="info-dot"></span><span>Sesión tranquila de aproximadamente 45 minutos</span></div>
-    <div class="info-row"><span class="info-dot"></span><span>En interior (tu casa) o exterior, lo que prefieras</span></div>
+    <div class="info-row"><span class="info-dot"></span><span>En interior (vuestra casa) o exterior, lo que prefiráis</span></div>
     <div class="info-row"><span class="info-dot"></span><span>Zona de Gijón y alrededores</span></div>
   </div>
 
@@ -468,6 +468,12 @@
     </div>
   </div>
 
+  <div id="exterior-prefs" style="display:none; margin-top: 1rem;">
+    <p class="section-label">Lugares o preferencias para el exterior</p>
+    <p class="section-sub">¿Tienes algún sitio en mente? Un parque, una playa, un rincón especial...</p>
+    <textarea id="exterior-notes" placeholder="Escribe aquí tus ideas..."></textarea>
+  </div>
+
   <div class="divider"></div>
 
   <p class="section-label">¿En qué localidad vivís?</p>
@@ -482,20 +488,24 @@
 
   <div class="summary-box" id="summary"></div>
   <button class="confirm-btn" id="confirm-btn" disabled>Enviar preferencias</button>
-  <p class="bottom-note">Te escribo en los próximos días para cerrar el día definitivo.</p>
+  <p class="bottom-note">Te escribo en menos de 24h para cerrar el día definitivo.</p>
 
 </div>
 
 <div class="success-screen" id="success-screen">
   <div class="success-icon">✓</div>
   <h2 class="success-title">¡Recibido!</h2>
-  <p class="success-text">Ya tengo tus preferencias, Adrián.<br>Te escribo en los próximos días para cerrar juntos el día definitivo.</p>
+  <p class="success-text">Ya tengo tus preferencias, Adrián.<br>Te escribo en menos de 24h para cerrar juntos el día definitivo.</p>
 </div>
 
 <script>
-const FULL_BLOCK = [7,8,9,10,28,29,30,31];
+const FULL_BLOCK = [3,7,8,9,10,28,29,30,31];
 function getDow(d) { return new Date(2026,4,d).getDay(); }
 function isBlocked(d) { return FULL_BLOCK.includes(d) || getDow(d) === 2; }
+// Solo mañana: sábados, domingos y lunes 11
+function isMorningOnly(d) { const dow = getDow(d); return ((dow === 0 || dow === 6) && !isBlocked(d)) || d === 11; }
+// Solo tarde: lunes 4
+function isAfternoonOnly(d) { return d === 4; }
 
 let selectedDays = {};
 let selectedLoc = null;
@@ -527,7 +537,7 @@ function renderCal() {
     if (!blocked) {
       cell.addEventListener('click', () => {
         if (selectedDays[d]) { delete selectedDays[d]; }
-        else { selectedDays[d] = 'M'; }
+        else { selectedDays[d] = isAfternoonOnly(d) ? 'T' : 'M'; }
         renderCal(); renderChips(); updateSummary();
       });
     }
@@ -547,6 +557,9 @@ function renderChips() {
   hint.textContent = days.length === 1 ? '1 día seleccionado.' : days.length + ' días seleccionados.';
   days.forEach(d => {
     const t = selectedDays[d];
+    const morningOnly = isMorningOnly(d);
+    const afternoonOnly = isAfternoonOnly(d);
+    const restricted = morningOnly || afternoonOnly;
     const chip = document.createElement('div');
     chip.className = 'date-chip';
     chip.innerHTML = `
@@ -556,10 +569,13 @@ function renderChips() {
         <span class="chip-time">${t==='M'?'Mañana · 10–13h':'Tarde · 18–21h'}</span>
       </div>
       <div style="display:flex;align-items:center;gap:6px;">
-        <div class="chip-toggle">
-          <button class="chip-btn ${t==='M'?'active-m':''}" data-day="${d}" data-val="M">Mañana</button>
-          <button class="chip-btn ${t==='T'?'active-t':''}" data-day="${d}" data-val="T">Tarde</button>
-        </div>
+        ${restricted
+          ? `<span style="font-size:11px;color:var(--text-light)">${morningOnly ? 'Solo mañana' : 'Solo tarde'}</span>`
+          : `<div class="chip-toggle">
+              <button class="chip-btn ${t==='M'?'active-m':''}" data-day="${d}" data-val="M">Mañana</button>
+              <button class="chip-btn ${t==='T'?'active-t':''}" data-day="${d}" data-val="T">Tarde</button>
+             </div>`
+        }
         <button class="chip-remove" data-day="${d}">&times;</button>
       </div>`;
     area.appendChild(chip);
@@ -586,6 +602,7 @@ document.getElementById('loc-grid').addEventListener('click', e => {
   document.querySelectorAll('.opt-card').forEach(s => s.classList.remove('selected'));
   opt.classList.add('selected');
   selectedLoc = opt.dataset.loc;
+  document.getElementById('exterior-prefs').style.display = selectedLoc === 'Exterior' ? 'block' : 'none';
   updateSummary();
 });
 
@@ -614,6 +631,7 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
 
   const datesStr = days.map(d => d + ' de mayo de 2026 (' + (selectedDays[d]==='M'?'mañana 10–13h':'tarde 18–21h') + ')').join(', ');
   const notes = document.getElementById('notes').value.trim();
+  const exteriorNotes = document.getElementById('exterior-notes').value.trim();
 
   const btn = document.getElementById('confirm-btn');
   btn.disabled = true;
@@ -627,6 +645,7 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
         nombre: 'Adrián',
         fechas: datesStr,
         espacio: selectedLoc,
+        preferencias_exterior: exteriorNotes || '—',
         localidad: localidad,
         notas: notes || '—'
       })
